@@ -10,7 +10,7 @@
  * Farshad Barahimi and Fernando Paulovich, “Multi-point dimensionality reduction to improve projection layout reliability.” , arXiv preprint (2021).
  */
 
-package CompactRedGrayPlusProjection;
+package RedGrayPlusProjection;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -34,7 +34,7 @@ public class CompactCommandLineInterface
 	public static void ProcessCommandLine(String[] args) throws Exception
 	{
 		System.out.println("");
-		System.out.println("Welcome to the Red Gray Plus projection tool version 1.0");
+		System.out.println("Welcome to the Red Gray Plus projection tool version 1.1");
 
 		var printWriter=new PrintWriter( new OutputStreamWriter(System.out, StandardCharsets.UTF_8), true);
 		printWriter.println("© 2019-2021 Dr. Fernando Paulovich and Mr. Farshad Barahimi.");
@@ -65,10 +65,10 @@ public class CompactCommandLineInterface
 			System.out.println("	NumberOfNeighboorsForBuildingGraph=\"\"");
 			System.out.println("	VisualDensityAdjustmentParameter=\"\"");
 			System.out.println("	CosineNeighborhoodNormalization=\"\"");
-			System.out.println("	SampleSize=\"\"");
+			System.out.println("	AfterUmapTo30DimensionsMaxRows=\"\"");
 			System.out.println("	MaxInputRows=\"\"");
 			System.out.println("	NumberOfThreads=\"\"");
-			System.out.println("	NumberOfGrayPoints=\"\"");
+			System.out.println("	OverrideMaxNumberOfReplicates=\"\"");
 			System.out.println("/>");
 			
 			System.out.println("");
@@ -204,9 +204,9 @@ public class CompactCommandLineInterface
 		
 		if(parameters.containsKey("NumberOfThreads") &&
 				Integer.parseInt(parameters.get("NumberOfThreads"))==1)
-			projectionMethod=new CompactRedGrayPlusProjectionMethodSingleThreaded();
+			projectionMethod=new RedGrayPlusProjectionMethodSingleThreaded();
 		else
-			projectionMethod=new CompactRedGrayPlusProjectionMethodMultiThreaded();
+			projectionMethod=new RedGrayPlusProjectionMethodMultiThreaded();
 		
 		dataInstanceSet.SetIsRedGray(true);
 		

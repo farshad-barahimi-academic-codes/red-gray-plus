@@ -10,7 +10,7 @@
  * Farshad Barahimi and Fernando Paulovich, “Multi-point dimensionality reduction to improve projection layout reliability.” , arXiv preprint (2021).
  */
 
-package CompactRedGrayPlusProjection;
+package RedGrayPlusProjection;
 
 import java.io.File;
 import java.io.PrintWriter;

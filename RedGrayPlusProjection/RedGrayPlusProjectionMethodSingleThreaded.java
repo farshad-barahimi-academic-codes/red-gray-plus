@@ -10,12 +10,12 @@
  * Farshad Barahimi and Fernando Paulovich, “Multi-point dimensionality reduction to improve projection layout reliability.” , arXiv preprint (2021).
  */
 
-package CompactRedGrayPlusProjection;
+package RedGrayPlusProjection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-public class CompactRedGrayPlusProjectionMethodSingleThreaded extends CompactProjectionMethod
+public class RedGrayPlusProjectionMethodSingleThreaded extends CompactProjectionMethod
 {
 	/**
 	 * The algorithm consists of three components:
@@ -295,8 +295,8 @@ public class CompactRedGrayPlusProjectionMethodSingleThreaded extends CompactPro
 			{
 				var projectedPointSet=new CompactProjectedPointSet(dataInstanceSet,false,false);
 				int outlierCount=projectedPointSet.GetPressureOutlierCount();
-				if(parameters.containsKey("NumberOfGrayPoints"))
-					outlierCount= Integer.parseInt(parameters.get("NumberOfGrayPoints"));
+				if(parameters.containsKey("OverrideMaxNumberOfReplicates"))
+					outlierCount= Integer.parseInt(parameters.get("OverrideMaxNumberOfReplicates"));
 				numberOfReplications=outlierCount;
 			}
 			else if(numberOfReplications>0 && replicationStarted && step%replicationInterval==0)

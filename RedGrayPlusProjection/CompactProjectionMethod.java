@@ -10,13 +10,12 @@
  * Farshad Barahimi and Fernando Paulovich, “Multi-point dimensionality reduction to improve projection layout reliability.” , arXiv preprint (2021).
  */
 
-package CompactRedGrayPlusProjection;
+package RedGrayPlusProjection;
 
-public enum CompactProjectionDisplayOptions
-{
-	NORMAL,
-	RED_GRAY,
-	RED_GRAY_CLASS_COLORED,
-	DIGITS,
-	DIGITS_RED_GRAY
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public abstract class CompactProjectionMethod
+{	
+	public abstract CompactProjectionOutput Project(CompactDataInstanceSet dataInstanceSet, HashMap<String,String> parameters) throws Exception;
 }

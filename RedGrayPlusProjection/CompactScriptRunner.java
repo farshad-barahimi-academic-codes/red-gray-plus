@@ -10,7 +10,7 @@
  * Farshad Barahimi and Fernando Paulovich, “Multi-point dimensionality reduction to improve projection layout reliability.” , arXiv preprint (2021).
  */
 
-package CompactRedGrayPlusProjection;
+package RedGrayPlusProjection;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -73,15 +73,15 @@ public class CompactScriptRunner
 		String tempFileName2=new File(new File(tempFolderName),"/umap_30dim_temp.py").getCanonicalPath();
 		String tempFileName3=new File(new File(tempFolderName),"/umap_30dim_temp_projected.csv").getCanonicalPath();
 		
-		int sampleSize=-1;
-		if(parameters.containsKey("SampleSize"))
-			sampleSize=Integer.parseInt(parameters.get("SampleSize"));
+		int afterUmapTo30DimensionsMaxRows=-1;
+		if(parameters.containsKey("AfterUmapTo30DimensionsMaxRows"))
+			afterUmapTo30DimensionsMaxRows=Integer.parseInt(parameters.get("AfterUmapTo30DimensionsMaxRows"));
 		
 		try(var printWriter=new PrintWriter(new File(tempFileName2)))
 		{
 			
 			printWriter.write(umapTo30DimensionsScript(tempFileName1, 
-					numberOfDimensions, tempFileName3, sampleSize, isDistanceInput));
+					numberOfDimensions, tempFileName3, afterUmapTo30DimensionsMaxRows, isDistanceInput));
 		}
 		catch (Exception e)
 		{
@@ -114,7 +114,7 @@ public class CompactScriptRunner
 		return tempFileName3;
 	}
 		
-	private static String umapTo30DimensionsScript(String inputFileName,int numberOfInputDimensions, String outputFileName,int sampleSize, boolean isDistanceInput)
+	private static String umapTo30DimensionsScript(String inputFileName,int numberOfInputDimensions, String outputFileName,int afterUmapTo30DimensionsMaxRows, boolean isDistanceInput)
 	{
 		var stringBuilder=new StringBuilder();
 		stringBuilder.append("import numpy\n");
@@ -138,9 +138,9 @@ public class CompactScriptRunner
 		stringBuilder.append("    transformedDataFrame=pandas.DataFrame(data=transformedData, columns=transformedDataColumns);\n");
 		stringBuilder.append("    originalDataFrame=pandas.DataFrame(data=dataFeatures, columns=originalDataColumns);\n");
 		stringBuilder.append("    outputDataFrame=pandas.concat([dataIsGrayDataFrame,dataClassDataFrame,originalDataFrame,transformedDataFrame],axis=1)\n");
-		if(sampleSize!=-1)
+		if(afterUmapTo30DimensionsMaxRows!=-1)
 		{
-			stringBuilder.append("    outputDataFrame=outputDataFrame.head("+sampleSize+")\n");
+			stringBuilder.append("    outputDataFrame=outputDataFrame.head("+afterUmapTo30DimensionsMaxRows+")\n");
 		}
 		stringBuilder.append("    return outputDataFrame\n");
 		stringBuilder.append("    \n");
