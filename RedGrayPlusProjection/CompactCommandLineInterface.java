@@ -34,14 +34,14 @@ public class CompactCommandLineInterface
 	public static void ProcessCommandLine(String[] args) throws Exception
 	{
 		System.out.println("");
-		System.out.println("Welcome to the Red Gray Plus projection tool version 1.1");
+		System.out.println("Welcome to the Red Gray Plus projection tool version 1.2");
 
 		var printWriter=new PrintWriter( new OutputStreamWriter(System.out, StandardCharsets.UTF_8), true);
-		printWriter.println("© 2019-2021 Dr. Fernando Paulovich and Mr. Farshad Barahimi.");
+		printWriter.println("Copyright 2019-2021 Dr. Fernando Paulovich and Mr. Farshad Barahimi.");
 		printWriter.println("Licensed under the Academic Free License version 3.0 (https://opensource.org/licenses/AFL-3.0).");
 		System.out.println("");
 		System.out.println("Look at the following preprint on arXiv for more information about Red Gray Plus projection method:");
-		System.out.println("Farshad Barahimi and Fernando Paulovich, “Multi-point dimensionality reduction to improve projection layout reliability.” , arXiv preprint (2021).");
+		System.out.println("Farshad Barahimi and Fernando Paulovich, \"Multi-point dimensionality reduction to improve projection layout reliability.\" , arXiv preprint (2021).");
 		System.out.println("");
 		
 		if(args.length!=1)
@@ -54,21 +54,21 @@ public class CompactCommandLineInterface
 			
 			System.out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			System.out.println("<Configuration");
-			System.out.println("	Name=\"\"");
-			System.out.println("	ProjectionMethod=\"\"");
-			System.out.println("	InputFileType=\"\"");
-			System.out.println("	InputFileName=\"\"");
-			System.out.println("	OutputFolderName=\"\"");
-			System.out.println("	InputFileClassColumnType=\"\"");
-			System.out.println("	EvaluationNeighborhoodSize=\"\"");
-			System.out.println("	UmapTo30DimensionsFirst=\"\"");
-			System.out.println("	NumberOfNeighboorsForBuildingGraph=\"\"");
-			System.out.println("	VisualDensityAdjustmentParameter=\"\"");
-			System.out.println("	CosineNeighborhoodNormalization=\"\"");
-			System.out.println("	AfterUmapTo30DimensionsMaxRows=\"\"");
-			System.out.println("	MaxInputRows=\"\"");
-			System.out.println("	NumberOfThreads=\"\"");
-			System.out.println("	OverrideMaxNumberOfReplicates=\"\"");
+			System.out.println("	Name=\"\"   <!-- required -->");
+			System.out.println("	ProjectionMethod=\"\"   <!-- required -->");
+			System.out.println("	InputFileType=\"\"   <!-- required -->");
+			System.out.println("	InputFileName=\"\"   <!-- required -->");
+			System.out.println("	OutputFolderName=\"\"   <!-- required -->");
+			System.out.println("	InputFileClassColumnType=\"\"   <!-- required -->");
+			System.out.println("	EvaluationNeighborhoodSize=\"\"   <!-- default 10 -->");
+			System.out.println("	UmapTo30DimensionsFirst=\"\"   <!-- default false -->");
+			System.out.println("	NumberOfNeighboorsForBuildingGraph=\"\"   <!-- default one third -->");
+			System.out.println("	VisualDensityAdjustmentParameter=\"\"   <!-- default 0.9 -->");
+			System.out.println("	CosineNeighborhoodNormalization=\"\"    <!-- default false -->");
+			System.out.println("	AfterUmapTo30DimensionsMaxRows=\"\"   <!-- default disabled -->");
+			System.out.println("	MaxInputRows=\"\"   <!-- default disabled -->");
+			System.out.println("	NumberOfThreads=\"\"   <!-- default 1 less than cpu cores -->");
+			System.out.println("	OverrideMaxNumberOfReplicates=\"\"   <!-- default disabled -->");
 			System.out.println("/>");
 			
 			System.out.println("");
@@ -92,10 +92,7 @@ public class CompactCommandLineInterface
 		String outputFolderName=parameters.get("OutputFolderName");
 		
 		int neighborhoodSizeForEvaluation=10;
-		boolean allNeighborhoodSizes=false;
-		if(parameters.get("EvaluationNeighborhoodSize").toLowerCase().compareTo("all")==0)
-			allNeighborhoodSizes=true;
-		else
+		if(parameters.containsKey("EvaluationNeighborhoodSize"))
 			neighborhoodSizeForEvaluation=Integer.parseInt(parameters.get("EvaluationNeighborhoodSize"));
 		
 		CompactProjectionEvaluator.SetStaticNeighborhoodSize(neighborhoodSizeForEvaluation);
@@ -300,9 +297,6 @@ public class CompactCommandLineInterface
 				return null;
 			
 			if(!(parameters.containsKey("InputFileClassColumnType")))
-				return null;
-			
-			if(!(parameters.containsKey("EvaluationNeighborhoodSize")))
 				return null;
 			
 			
