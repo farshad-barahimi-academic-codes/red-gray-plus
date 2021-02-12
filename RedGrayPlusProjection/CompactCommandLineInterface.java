@@ -34,7 +34,7 @@ public class CompactCommandLineInterface
 	public static void ProcessCommandLine(String[] args) throws Exception
 	{
 		System.out.println("");
-		System.out.println("Welcome to the Red Gray Plus projection tool version 1.2");
+		System.out.println("Welcome to the Red Gray Plus projection tool version 1.3");
 
 		var printWriter=new PrintWriter( new OutputStreamWriter(System.out, StandardCharsets.UTF_8), true);
 		printWriter.println("Copyright 2019-2021 Dr. Fernando Paulovich and Mr. Farshad Barahimi.");
@@ -54,22 +54,31 @@ public class CompactCommandLineInterface
 			
 			System.out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			System.out.println("<Configuration");
-			System.out.println("	Name=\"\"   <!-- required -->");
-			System.out.println("	ProjectionMethod=\"\"   <!-- required -->");
-			System.out.println("	InputFileType=\"\"   <!-- required -->");
-			System.out.println("	InputFileName=\"\"   <!-- required -->");
-			System.out.println("	OutputFolderName=\"\"   <!-- required -->");
-			System.out.println("	InputFileClassColumnType=\"\"   <!-- required -->");
-			System.out.println("	EvaluationNeighborhoodSize=\"\"   <!-- default 10 -->");
-			System.out.println("	UmapTo30DimensionsFirst=\"\"   <!-- default false -->");
-			System.out.println("	NumberOfNeighboorsForBuildingGraph=\"\"   <!-- default one third -->");
-			System.out.println("	VisualDensityAdjustmentParameter=\"\"   <!-- default 0.9 -->");
-			System.out.println("	CosineNeighborhoodNormalization=\"\"    <!-- default false -->");
-			System.out.println("	AfterUmapTo30DimensionsMaxRows=\"\"   <!-- default disabled -->");
-			System.out.println("	MaxInputRows=\"\"   <!-- default disabled -->");
-			System.out.println("	NumberOfThreads=\"\"   <!-- default 1 less than cpu cores -->");
-			System.out.println("	OverrideMaxNumberOfReplicates=\"\"   <!-- default disabled -->");
+			System.out.println("	Name=\"\"");
+			System.out.println("	ProjectionMethod=\"\"");
+			System.out.println("	InputFileType=\"\"");
+			System.out.println("	InputFileName=\"\"");
+			System.out.println("	OutputFolderName=\"\"");
+			System.out.println("	InputFileClassColumnType=\"\"");
+			System.out.println("	EvaluationNeighborhoodSize=\"\"");
+			System.out.println("	UmapTo30DimensionsFirst=\"\"");
+			System.out.println("	NumberOfNeighboorsForBuildingGraph=\"\"");
+			System.out.println("	VisualDensityAdjustmentParameter=\"\"");
+			System.out.println("	CosineNeighborhoodNormalization=\"\"");
+			System.out.println("	AfterUmapTo30DimensionsMaxRows=\"\"");
+			System.out.println("	MaxInputRows=\"\"");
+			System.out.println("	NumberOfThreads=\"\"");
+			System.out.println("	OverrideMaxNumberOfReplicates=\"\"");
 			System.out.println("/>");
+			System.out.println("<!-- The attribute EvaluationNeighborhoodSize is optional. Default value: 10 -->");
+			System.out.println("<!-- The attribute UmapTo30DimensionsFirst is optional. Default value: false -->");
+			System.out.println("<!-- The attribute NumberOfNeighboorsForBuildingGraph is optional. Default value: one-third of number of points -->");
+			System.out.println("<!-- The attribute VisualDensityAdjustmentParameter is optional. Default value: 0.9 -->");
+			System.out.println("<!-- The attribute CosineNeighborhoodNormalization is optional. Default value: false -->");
+			System.out.println("<!-- The attribute AfterUmapTo30DimensionsMaxRows is optional. Not effective if no value is specified -->");
+			System.out.println("<!-- The attribute MaxInputRows is optional. Not effective if no value is specified -->");
+			System.out.println("<!-- The attribute NumberOfThreads is optional. Default value: 1 less than cpu cores -->");
+			System.out.println("<!-- The attribute OverrideMaxNumberOfReplicates is optional. Does not override if no value is specified -->");
 			
 			System.out.println("");
 			return;
@@ -82,6 +91,25 @@ public class CompactCommandLineInterface
 		{
 			System.out.println("Bad configuration file:"+configurationFileName);
 			return;
+		}
+		
+		var validAttributes=new String[] {"Name","ProjectionMethod","InputFileType","InputFileName",
+				"OutputFolderName","InputFileClassColumnType","EvaluationNeighborhoodSize",
+				"UmapTo30DimensionsFirst","NumberOfNeighboorsForBuildingGraph","VisualDensityAdjustmentParameter",
+				"CosineNeighborhoodNormalization","AfterUmapTo30DimensionsMaxRows","MaxInputRows",
+				"NumberOfThreads","OverrideMaxNumberOfReplicates"};
+		for(String parameter : parameters.keySet())
+		{
+			boolean validParameter=false;
+			for(int i=0;i<validAttributes.length;i++)
+				if(parameter.compareTo(validAttributes[i])==0)
+					validParameter=true;
+			
+			if(!validParameter)
+			{
+				System.out.println("Error: Invalid attribute in configuration file.");
+				return;
+			}
 		}
 		
 		System.out.println("Configuration:"+parameters);
