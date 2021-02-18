@@ -35,10 +35,18 @@ public class RedGrayPlusProjectionMethodSingleThreaded extends CompactProjection
 		var dataInstances=dataInstanceSet.GetDataInstances();
 		int numberOfPoints=dataInstances.size();
 		int defaultNumberOfNeighbors=numberOfPoints/3;
-		int numberOfNeighbors=Integer.parseInt(parameters.getOrDefault("NumberOfNeighboorsForBuildingGraph", defaultNumberOfNeighbors+""));
+		
+		int numberOfNeighbors=defaultNumberOfNeighbors;
+		if(parameters.getOrDefault("NumberOfNeighboursForBuildingGraph","").compareTo("one-third")==0)
+			numberOfNeighbors=numberOfPoints/3;
+		else if(parameters.getOrDefault("NumberOfNeighboursForBuildingGraph","").compareTo("one-forth")==0)
+			numberOfNeighbors=numberOfPoints/4;
+		else if(parameters.getOrDefault("NumberOfNeighboursForBuildingGraph","").compareTo("one-fifth")==0)
+			numberOfNeighbors=numberOfPoints/5;
+		else
+			numberOfNeighbors=Integer.parseInt(parameters.getOrDefault("NumberOfNeighboursForBuildingGraph", defaultNumberOfNeighbors+""));
 		
 		
-		boolean noCover=(parameters.getOrDefault("NoCover", "false").compareTo("true")==0);
 		boolean displayNeighborhoodGraph=(parameters.getOrDefault("DisplayNeighborhoodGraph", "false").compareTo("true")==0);
 		
 		dataInstanceSet.ComputeNeighbors(numberOfNeighbors);

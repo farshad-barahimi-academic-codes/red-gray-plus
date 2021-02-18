@@ -34,7 +34,7 @@ public class CompactCommandLineInterface
 	public static void ProcessCommandLine(String[] args) throws Exception
 	{
 		System.out.println("");
-		System.out.println("Welcome to the Red Gray Plus projection tool version 1.3");
+		System.out.println("Welcome to the Red Gray Plus projection tool version 1.4");
 
 		var printWriter=new PrintWriter( new OutputStreamWriter(System.out, StandardCharsets.UTF_8), true);
 		printWriter.println("Copyright 2019-2021 Dr. Fernando Paulovich and Mr. Farshad Barahimi.");
@@ -47,7 +47,14 @@ public class CompactCommandLineInterface
 		if(args.length!=1)
 		{
 			System.out.println("Usage guide:");
-			System.out.println("This command line tool only accepts one argument which is the path to a confiugration file.");
+			System.out.println("This command line tool only accepts one argument which is the path to a confiugration file or --help to show more info.");
+			System.out.println("");
+			return;
+		}
+		else if(args[0].compareTo("--help")==0)
+		{
+			System.out.println("Usage guide:");
+			System.out.println("This command line tool only accepts one argument which is the path to a confiugration file or --help to show more info.");
 			System.out.println("");
 			System.out.println("The structure of the configuration file is shown below but not all attributes are necessary.");
 			System.out.println("");
@@ -62,7 +69,7 @@ public class CompactCommandLineInterface
 			System.out.println("	InputFileClassColumnType=\"\"");
 			System.out.println("	EvaluationNeighborhoodSize=\"\"");
 			System.out.println("	UmapTo30DimensionsFirst=\"\"");
-			System.out.println("	NumberOfNeighboorsForBuildingGraph=\"\"");
+			System.out.println("	NumberOfNeighboursForBuildingGraph=\"\"");
 			System.out.println("	VisualDensityAdjustmentParameter=\"\"");
 			System.out.println("	CosineNeighborhoodNormalization=\"\"");
 			System.out.println("	AfterUmapTo30DimensionsMaxRows=\"\"");
@@ -72,7 +79,7 @@ public class CompactCommandLineInterface
 			System.out.println("/>");
 			System.out.println("<!-- The attribute EvaluationNeighborhoodSize is optional. Default value: 10 -->");
 			System.out.println("<!-- The attribute UmapTo30DimensionsFirst is optional. Default value: false -->");
-			System.out.println("<!-- The attribute NumberOfNeighboorsForBuildingGraph is optional. Default value: one-third of number of points -->");
+			System.out.println("<!-- The attribute NumberOfNeighboursForBuildingGraph is optional. Default value: one-third of number of points -->");
 			System.out.println("<!-- The attribute VisualDensityAdjustmentParameter is optional. Default value: 0.9 -->");
 			System.out.println("<!-- The attribute CosineNeighborhoodNormalization is optional. Default value: false -->");
 			System.out.println("<!-- The attribute AfterUmapTo30DimensionsMaxRows is optional. Not effective if no value is specified -->");
@@ -93,9 +100,17 @@ public class CompactCommandLineInterface
 			return;
 		}
 		
+		if(parameters.containsKey("NumberOfNeighboorsForBuildingGraph") && !(parameters.containsKey("NumberOfNeighboursForBuildingGraph")))
+		{
+			parameters.put("NumberOfNeighboursForBuildingGraph", parameters.get("NumberOfNeighboorsForBuildingGraph"));
+			parameters.remove("NumberOfNeighboorsForBuildingGraph");
+			System.out.println("Warning: The attribute NumberOfNeighboorsForBuildingGraph is misspelled in the given configuration file. Continuing by using it as NumberOfNeighboursForBuildingGraph");
+			System.out.println("");
+		}
+		
 		var validAttributes=new String[] {"Name","ProjectionMethod","InputFileType","InputFileName",
 				"OutputFolderName","InputFileClassColumnType","EvaluationNeighborhoodSize",
-				"UmapTo30DimensionsFirst","NumberOfNeighboorsForBuildingGraph","VisualDensityAdjustmentParameter",
+				"UmapTo30DimensionsFirst","NumberOfNeighboursForBuildingGraph","VisualDensityAdjustmentParameter",
 				"CosineNeighborhoodNormalization","AfterUmapTo30DimensionsMaxRows","MaxInputRows",
 				"NumberOfThreads","OverrideMaxNumberOfReplicates"};
 		for(String parameter : parameters.keySet())
@@ -107,13 +122,96 @@ public class CompactCommandLineInterface
 			
 			if(!validParameter)
 			{
-				System.out.println("Error: Invalid attribute in configuration file.");
+				System.out.println("Error: Invalid attribute in the configuration file.");
 				return;
 			}
 		}
 		
 		System.out.println("Configuration:"+parameters);
 		
+		boolean assortedNumberOfNeighboursForBuildingGraph=false;
+		if(parameters.containsKey("NumberOfNeighboursForBuildingGraph"))
+			if(parameters.get("NumberOfNeighboursForBuildingGraph").compareTo("assorted")==0)
+				assortedNumberOfNeighboursForBuildingGraph=true;
+		
+		boolean assortedVisualDensityAdjustmentParameter=false;
+		if(parameters.containsKey("VisualDensityAdjustmentParameter"))
+			if(parameters.get("VisualDensityAdjustmentParameter").compareTo("assorted")==0)
+				assortedVisualDensityAdjustmentParameter=true;
+		
+		String[] assortedList1=new String[] {"10","20","one-third","one-fifth"};
+		String[] assortedList2=new String[] {"0.9","0.5","0.1","-0.1","-0.5","-0.9"};
+		
+		String outputFolderName=parameters.get("OutputFolderName");
+		
+		if(!assortedNumberOfNeighboursForBuildingGraph && !assortedVisualDensityAdjustmentParameter)
+		{
+			runBasedOnParameters(parameters);
+			
+			System.out.println("");
+			System.out.println("Finished the configuration: "+ parameters.get("Name"));
+			System.out.println("Output folder: "+ parameters.get("OutputFolderName"));
+			System.out.println("");
+		}
+		else
+		{
+			String assortedFolderName=new File(new File(outputFolderName),"/assorted/").getCanonicalPath();
+			new File(assortedFolderName).mkdirs();
+			
+			for(int i=0;i<assortedList1.length;i++)
+			{	
+				String folderName1=new String(assortedFolderName);
+				
+				if(assortedNumberOfNeighboursForBuildingGraph)
+				{
+					parameters.put("NumberOfNeighboursForBuildingGraph", assortedList1[i]);
+					
+					folderName1=new File(new File(assortedFolderName),"/NumberOfNeighboursForBuildingGraph_"+assortedList1[i]+"/").getCanonicalPath();
+					new File(folderName1).mkdirs();
+				}
+				
+				
+				for(int j=0;j<assortedList2.length;j++)
+				{
+					String folderName2=new String(folderName1);
+					
+					if(assortedVisualDensityAdjustmentParameter)
+					{
+						parameters.put("VisualDensityAdjustmentParameter", assortedList2[j]);
+						
+						folderName2=new File(new File(folderName1),"/VisualDensityAdjustmentParameter_"+assortedList2[j]+"/").getCanonicalPath();
+						new File(folderName2).mkdirs();	
+					}
+					
+					parameters.put("OutputFolderName", folderName2);
+					
+					System.out.println("");
+					System.out.println("Starting one of the assorted configurations of the configuration: "+ parameters.get("Name"));
+										
+					runBasedOnParameters((HashMap<String,String>)(parameters.clone()));
+					
+					System.out.println("");
+					System.out.println("Finished one of the assorted configurations of the configuration: "+ parameters.get("Name"));
+					System.out.println("Output folder: "+ parameters.get("OutputFolderName"));
+					
+					if(!assortedVisualDensityAdjustmentParameter)
+						break;
+				}
+				
+				if(!assortedNumberOfNeighboursForBuildingGraph)
+					break;
+			}
+			
+			System.out.println("");
+			System.out.println("Finished the assorted configuration: "+ parameters.get("Name"));
+			System.out.println("Output folder: "+ outputFolderName);
+			System.out.println("");
+		}
+		
+	}
+	
+	private static void runBasedOnParameters(HashMap<String,String> parameters) throws Exception
+	{
 		String projectionMethodName=parameters.get("ProjectionMethod");
 		String inputFileType=parameters.get("InputFileType");
 		String inputFileName=parameters.get("InputFileName");
@@ -289,11 +387,16 @@ public class CompactCommandLineInterface
 		outputProjectionStep(bestRedAndGrayTrustworthinessStep,outputFolderName,"RedGrayPlus_Iteration"+bestRedAndGrayTrustworthinessStepIndex+"_BestRedAndGrayTrustworthiness", projectionOutput);
 		outputProjectionStep(bestRedTrustworthinessStep,outputFolderName,"RedGrayPlus_Iteration"+bestRedTrustworthinessStepIndex+"_BestRedTrustworthiness", projectionOutput);
 		
-		System.out.println("");
-		System.out.println("Finished on the configuration "+ parameters.get("Name"));
-		System.out.println("Output folder: "+ parameters.get("OutputFolderName"));
-		System.out.println("");
 		
+		String outputConfigurationFileName=new File(new File(outputFolderName),"/configuration.txt").getCanonicalPath();
+		try(var printWriter=new PrintWriter(new File(outputConfigurationFileName)))
+		{
+			printWriter.write(parameters.toString());
+		}
+		catch (Exception e)
+		{
+			throw e;
+		}
 	}
 	
 	private static HashMap<String,String> processConfigurationFile(String configurationFileName)
